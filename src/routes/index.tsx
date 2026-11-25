@@ -1,19 +1,13 @@
+import { lazy } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { Button } from "@/components/ui/button"
+import { createClientOnlyFn } from "@tanstack/react-start"
 
-export const Route = createFileRoute("/")({ component: App })
+// The page uses Firebase and browser speech, so it is loaded only in the browser.
+const loadPage = createClientOnlyFn(
+  () => import("@/components/viva/home-page.client")
+)
 
-function App() {
-  return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-      </div>
-    </div>
-  )
-}
+export const Route = createFileRoute("/")({
+  ssr: false,
+  component: lazy(() => loadPage().then((m) => ({ default: m.HomePage }))),
+})

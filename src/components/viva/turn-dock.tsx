@@ -94,6 +94,7 @@ export function TurnDock({
   onSendTyped,
   onSpeak,
   onStop,
+  caption,
   className,
 }: {
   state: TurnState
@@ -103,6 +104,8 @@ export function TurnDock({
   onSendTyped: (text: string) => void
   onSpeak: () => void
   onStop: () => void
+  /** Replaces the state's default caption, e.g. after nothing was heard. */
+  caption?: string
   className?: string
 }) {
   const inputId = useId()
@@ -139,7 +142,7 @@ export function TurnDock({
             {l.title}
           </div>
           <div className={cn("text-sm leading-snug", l.captionTone)}>
-            {l.caption}
+            {caption ?? l.caption}
           </div>
         </div>
       </div>
