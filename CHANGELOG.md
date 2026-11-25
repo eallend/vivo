@@ -33,4 +33,14 @@ The app has the designed screens: sign-in, attempt list, the viva with visible t
 - ee8a150 feat: voice viva screens with turn states, saved attempts and revision point
 - 17e4a5b fix: one turn at a time, save before speaking, no false turn times
 - 05417c9 fix: retry the revision point, start from a failed list, no ending mid-thought
-- docs: run instructions, submission write-up and changelog (this commit)
+- 7a0cf70 docs: run instructions, submission write-up and changelog
+- 23b7185 fix: final review clean-ups
+- 0b32f28 docs: Definition of Done record for Voice Viva
+- 9509633 fix: stop waiting after 3 s when Chrome's speech engine never starts
+- 7a5bb15 docs: record the spoken run and the silent Chrome speech engine
+
+## Other changes
+
+- 67f2d4e chore: keep .env.example out of the env ignore rule — the example settings file is now part of the repo.
+- 6527048 chore: project Claude tooling — the planning commands, review agents and shadcn skills travel with the repo.
+- 3133486 docs: keep the build ledger; ignore IDE settings — the decision log from the build is kept for reviewers.
