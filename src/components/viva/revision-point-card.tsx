@@ -1,5 +1,6 @@
 import { RiBookOpenLine, RiInformationLine } from "@remixicon/react"
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Spinner } from "@/components/ui/spinner"
@@ -16,14 +17,28 @@ export function formatPages(pages: number[]): string {
 }
 
 /**
+ * Whether asking again could help: only when making the point failed (the
+ * model or the call), not when the answer or the note gave nothing to cite.
+ */
+export function canRetryRevisionPoint(revisionPoint: RevisionPoint): boolean {
+  return (
+    revisionPoint.status === "no_support" &&
+    revisionPoint.reason === "model_error"
+  )
+}
+
+/**
  * The post-viva revision point. Pass `"preparing"` while it is being made,
- * then the `RevisionPoint` the server returned.
+ * then the `RevisionPoint` the server returned. `onRetry` adds a Retry button
+ * when the point failed to be made.
  */
 export function RevisionPointCard({
   revisionPoint,
+  onRetry,
   className,
 }: {
   revisionPoint: RevisionPoint | "preparing"
+  onRetry?: () => void
   className?: string
 }) {
   const preparing = revisionPoint === "preparing"
@@ -94,6 +109,15 @@ export function RevisionPointCard({
               A revision point is only shown when the note backs it with a
               quote.
             </p>
+            {onRetry && canRetryRevisionPoint(revisionPoint) && (
+              <Button
+                variant="outline"
+                className="mt-2 self-start"
+                onClick={onRetry}
+              >
+                <span>Retry</span>
+              </Button>
+            )}
           </div>
         </div>
       )}

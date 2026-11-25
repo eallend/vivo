@@ -195,37 +195,48 @@ function VivaAttempt({ uid, initial }: { uid: string; initial: Attempt }) {
   }
 
   // The revision point is made once the viva is finished, and again after a
-  // reload if it was never saved.
+  // reload if it was never saved. A failed one (model_error) can be retried
+  // from the card; a saved one is never re-requested on its own.
+  const requestedRef = useRef(false)
   const revisingRef = useRef(false)
+  const [revising, setRevising] = useState(false)
+
+  async function revise(): Promise<void> {
+    if (revisingRef.current) return
+    revisingRef.current = true
+    setRevising(true)
+    let revisionPoint: RevisionPoint
+    let save = true
+    try {
+      revisionPoint = await makeRevisionPoint({
+        data: {
+          idToken: await getIdToken(),
+          answerText: attemptRef.current.answerText.slice(0, MAX_ANSWER_TEXT),
+        },
+      })
+    } catch {
+      // Shown but not saved, so a reload asks again.
+      revisionPoint = {
+        status: "no_support",
+        reason: "model_error",
+        retrievedPages: [],
+      }
+      save = false
+    }
+    revisingRef.current = false
+    if (stoppedRef.current) return
+    setRevising(false)
+    const next = { ...attemptRef.current, revisionPoint }
+    commit(next)
+    if (save) await persist(next)
+  }
+
   useEffect(() => {
-    if (phase !== "review" || attempt.revisionPoint || revisingRef.current) {
+    if (phase !== "review" || attempt.revisionPoint || requestedRef.current) {
       return
     }
-    revisingRef.current = true
-    void (async () => {
-      let revisionPoint: RevisionPoint
-      let save = true
-      try {
-        revisionPoint = await makeRevisionPoint({
-          data: {
-            idToken: await getIdToken(),
-            answerText: attemptRef.current.answerText.slice(0, MAX_ANSWER_TEXT),
-          },
-        })
-      } catch {
-        // Shown but not saved, so a reload asks again.
-        revisionPoint = {
-          status: "no_support",
-          reason: "model_error",
-          retrievedPages: [],
-        }
-        save = false
-      }
-      if (stoppedRef.current) return
-      const next = { ...attemptRef.current, revisionPoint }
-      commit(next)
-      if (save) await persist(next)
-    })()
+    requestedRef.current = true
+    void revise()
   }, [phase, attempt.revisionPoint])
 
   function end() {
@@ -244,6 +255,8 @@ function VivaAttempt({ uid, initial }: { uid: string; initial: Attempt }) {
     return (
       <ReviewScreen
         attempt={attempt}
+        revising={revising}
+        onRetryRevision={() => void revise()}
         saveFailed={saveFailed}
         onSaveAgain={saveAgain}
       />
@@ -451,7 +464,11 @@ function SessionScreen({
             <span>Saved</span>
           </span>
         )}
-        <Button variant="outline" onClick={() => setConfirmEnd(true)}>
+        <Button
+          variant="outline"
+          disabled={turnState === "thinking"}
+          onClick={() => setConfirmEnd(true)}
+        >
           <span>End viva</span>
         </Button>
       </AppHeader>
@@ -551,8 +568,7 @@ function SessionScreen({
             </Button>
           }
         >
-          Check your connection, then save again. You can keep going
-          meanwhile.
+          Check your connection, then save again. You can keep going meanwhile.
         </StatusBanner>
       )}
 
@@ -598,10 +614,14 @@ function SessionScreen({
 
 function ReviewScreen({
   attempt,
+  revising,
+  onRetryRevision,
   saveFailed,
   onSaveAgain,
 }: {
   attempt: Attempt
+  revising: boolean
+  onRetryRevision: () => void
   saveFailed: boolean
   onSaveAgain: () => void
 }) {
@@ -642,7 +662,12 @@ function ReviewScreen({
           </span>
         </div>
         <RevisionPointCard
-          revisionPoint={attempt.revisionPoint ?? "preparing"}
+          revisionPoint={
+            revising || !attempt.revisionPoint
+              ? "preparing"
+              : attempt.revisionPoint
+          }
+          onRetry={onRetryRevision}
         />
         <div className="grid grid-cols-2 items-start gap-6">
           <ReviewTranscript entries={transcriptEntries(attempt)} />

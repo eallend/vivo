@@ -130,7 +130,8 @@ export function HomePage() {
       <main className="mx-auto flex w-full max-w-205 grow flex-col gap-5 px-6 py-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h1 className="text-3xl font-bold">My attempts</h1>
-          {attempts !== null && !empty && startButton("Start new viva")}
+          {(loadError || (attempts !== null && !empty)) &&
+            startButton("Start new viva")}
         </div>
         {startError && (
           <p
