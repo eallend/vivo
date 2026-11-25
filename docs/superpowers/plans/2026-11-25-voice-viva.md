@@ -52,7 +52,7 @@ Working rules:
 User hand-offs:
 
 - **H-1 (during Task 7):** paste `firestore.rules` into Firebase console → Firestore Database → Rules → Publish. Without it nothing can be saved.
-- **H-2 (ideally before Task 8):** put the chosen Claude Design sketch (screenshots or exported HTML) in `docs/design/`. If it is there when Task 8 starts, Task 8 builds the screens in that design directly and Task 9 is skipped as already done. If it arrives after Task 8, Task 9 restyles. If it never arrives, the screens stay in plain shadcn defaults and Task 9 is skipped and reported.
+- **H-2 (ideally before Task 8):** put the chosen Claude Design sketch (screenshots or exported HTML) in `docs/design/`. If it is there when Task 8 starts, Task 8 builds the screens in that design directly and Task 9 is skipped as already done. If it is not there when Tasks 1 to 7 are done, stop and ask the user before starting Task 8: wait for the sketch, or build plain screens now and restyle in Task 9. Do not start Task 8 without the sketch or that answer.
 - **H-3 (during Task 10):** a five-minute spoken run in Chrome following `docs/submission/write-up.md`, to record R-7, R-8, R-9, R-15. An agent cannot use the microphone.
 
 Order: Task 1 first. Then Tasks 2, 4 and 7 can run in parallel. Task 3 needs 2. Task 5 needs 4. Task 6 needs 2, 3, 5. Task 8 needs 6, 7. Task 9 needs 8. Task 10 last.
