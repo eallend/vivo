@@ -6,11 +6,11 @@ Checked on 2026-11-25 at commit 23b7185; manual rows updated after the spoken ru
 
 | Row | What | How checked | Observed | Result |
 |---|---|---|---|---|
-| R-1 | Available finding keeps eye, value, unit | `pnpm test` (`src/lib/viva/findings.test.ts`) | 61/61 tests pass; also `pnpm check:live` Check 1: spoken "Right eye, intraocular pressure: 58 mmHg. Goldmann applanation, 23:55." | pass |
+| R-1 | Available finding keeps eye, value, unit | `pnpm test` (`src/lib/viva/findings.test.ts`) | 63/63 tests pass; also `pnpm check:live` Check 1: spoken "Right eye, intraocular pressure: 58 mmHg. Goldmann applanation, 23:55." | pass |
 | R-2 | Unavailable finding is stated | `pnpm test` (`findings.test.ts`); `pnpm check:live` Check 2 | spoken "Right eye, gonioscopy: not available. No view: corneal oedema." | pass |
 | R-3 | No eye named gives both | `pnpm test` (`findings.test.ts`) | pass | pass |
 | R-4 | Findings come from the file | `pnpm test` (`findings.test.ts`) | pass | pass |
-| R-5 | Diagnosis not sent to the browser | test half: `pnpm test` (`src/server/viva.handlers.test.ts`); bundle half: `grep -rl sk-ant dist` after `pnpm build` | tests pass; 0 files contain "sk-ant" | pass |
+| R-5 | Diagnosis not sent to the browser | test half: `pnpm test` (`src/server/viva.handlers.test.ts`); bundle half: after `pnpm build`, search `dist/client` for `examiner_notes` and for the diagnosis sentence ("Right acute primary angle closure, with a narrow left angle") | tests pass; 0 files contain either (re-checked 2026-11-26) | pass |
 | R-6 | Exactly one follow-up | `pnpm test` (`src/lib/viva/flow.test.ts`) | pass | pass |
 | R-7 | Follow-up never restates a finding | test half: `pnpm test` (`flow.test.ts`); manual half: spoken run | tests pass; spoken run: follow-up asked "Why would you start pilocarpine but not wait for the pressure to fall first?" about the trainee's own plan | pass |
 | R-8 | Turn state is visible | manual spoken run in Chrome (H-3) | typed Playwright runs saw all four states; spoken run saw listening and thinking, but no audio played on the test Mac (Chrome speech engine silent even in a bare console test) | not verified (partly) |
@@ -30,7 +30,7 @@ Checked on 2026-11-25 at commit 23b7185; manual rows updated after the spoken ru
 | `pnpm typecheck` | 0 | no errors |
 | `pnpm lint` | 0 | no errors |
 | `pnpm build` | 0 | built to `dist/` |
-| `pnpm test` | 0 | Test Files 13 passed (13), Tests 61 passed (61) |
+| `pnpm test` | 0 | Test Files 13 passed (13), Tests 63 passed (63) |
 
 ## (c) Must not change
 

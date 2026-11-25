@@ -65,7 +65,7 @@ pnpm check:privacy   # proves account B and a signed-out visitor cannot read acc
 
 ## The case file the app reads
 
-The server reads `docs/requirements/Eye Academy - Developer Take-Home (Case EA-VIVA-001).json` directly on every request, with no caching and no copy. If you edit a finding in that file (for example change the right-eye pressure from 58 to 44), the next turn uses the new value; no restart is needed. To point the app at a different file, set `VIVA_CASE_PATH` in `.env.local`. Only server code reads this file, so the browser never receives the diagnosis or examiner notes.
+The server reads `docs/requirements/Eye Academy - Developer Take-Home (Case EA-VIVA-001).json` directly on every request, with no caching and no copy. If you edit a finding in that file (for example change the right-eye pressure from 58 to 44), the next turn uses the new value; no restart is needed with `pnpm dev`. Under Docker the file is inside the image, so rebuild (`docker compose up --build`) after editing it. To point the app at a different file, set `VIVA_CASE_PATH` in `.env.local`. Only server code reads this file, so the browser never receives the diagnosis or examiner notes.
 
 ## The reference note
 

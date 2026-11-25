@@ -4,7 +4,7 @@ Case EA-VIVA-001 (acute angle closure). Local demo, desktop Chrome. Run steps ar
 
 ## What works and where I stopped
 
-Works, with automated tests (57 passing under `pnpm test`) or the live checks below:
+Works, with automated tests (63 passing under `pnpm test`) or the live checks below:
 
 - Sign up and sign in with email and password; each attempt is saved under its owner and only the owner can read it (`pnpm check:privacy`: 4 of 4 pass, including a 403 for a second account and for a signed-out visitor).
 - A viva in which the trainee asks for findings by voice or typing. Each finding comes back with eye, label, value, unit and method exactly from the case file; an unavailable finding says so and gives the stated reason; a request that matches nothing gets "That is not available in this case."
@@ -14,9 +14,11 @@ Works, with automated tests (57 passing under `pnpm test`) or the live checks be
 
 Where I stopped:
 
-- The manual spoken run in real Chrome with a microphone has not been done yet (section "Manual spoken run" below). Everything that does not need a microphone has been run.
+- Time: by git timestamps the build ran from the first commit at 19:48 to this write-up at 22:52 (Moscow time, GMT+3) on 25 November, about 3 hours, with planning just before. After that I spent roughly 1.5 hours more on the spoken run and what it showed (a 3-second guard for a silent speech engine), a loading screen, a final QA and product check, and Docker packaging (`docker compose up --build`, see README). Those later commits are listed in `CHANGELOG.md`.
+- The manual spoken run was done (section "Manual spoken run" below), but Chrome's speech synthesis made no sound on that Mac, so the examiner's voice and a full spoken turn time were not verified.
+- Everything that does not need a microphone or speakers was run, including a final QA pass: 14 of 16 acceptance rows pass, 2 not verified (both need audio), none fail (`docs/reviews/2026-11-26-final-check-qa.md`).
 - I did not build any of the items listed as non-goals in the design (hosting, more than one case, non-Chrome browsers, interrupting the examiner, hands-free listening, scoring, password reset, embeddings, server-side database writes, an "is that your final answer?" step, cleaning up test accounts).
-- The browser tests I could automate (Playwright driving Chrome) do not fire Chrome's speech "start" event, so turn times seen there were not real. The real timings come from `pnpm check:live` (server side) and from the spoken run (full browser path).
+- In some automated browser runs (Playwright driving Chrome) the speech "start" event never fired, so turn times seen there were not real; in the final QA run it did fire and typed turns showed real times. The server-side timings below come from `pnpm check:live`.
 
 ## Model choice and responsiveness
 
@@ -37,7 +39,7 @@ Where I stopped:
 | "What is the intraocular pressure in the right eye?" | 3181 | 1160 | 2546 | 2417 |
 | "Can I see the gonioscopy of the right eye?" | 1321 | 961 | 1326 | 1089 |
 
-Revision point (Opus 5.5, once per viva): 4330 and 3524 ms in the first run, 3608 ms (Haiku run) and 3897 ms (Sonnet run) in the second.
+Revision point (Opus 5.5, once per viva): 4330 and 3524 ms in the first run, 3608 ms (Haiku run) and 3897 ms (Sonnet run) in the second. **But it varies a lot:** in the final QA pass on 26 November the same call took 64 s in `pnpm check:live` and about 38 s in the browser. The trainee sees a "Preparing your revision point" card meanwhile. The call now has a 60 s limit and no automatic retry (a retry doubled the worst case to 2 minutes); if it fails, the card offers Retry. If this persists, Sonnet 5.5 for the revision point (`VIVA_REVISION_MODEL`) is the obvious thing to measure next.
 
 Reading: Haiku's first call of a session is the slowest (3181 ms in run 1), after which it settles near 1 second. Sonnet was not faster in any run and was slower on the first question in both. With four numbers per model I do not claim a precise difference; the figures only support "Haiku is at least as fast, so there is no reason to pay for Sonnet on live turns".
 
@@ -68,7 +70,7 @@ The rule that the quote must really exist is also tested without any model call:
 
 ## Manual spoken run (H-3)
 
-Run on 25 November 2026 at 23:14 CET by the author, in desktop Chrome on macOS, with the microphone allowed. The trainee spoke English as a second language, which made it a fair test of speech recognition on medical words.
+Run on 25 November 2026 at 23:14 Moscow time (20:14 GMT) by the author, in desktop Chrome on macOS, with the microphone allowed. The trainee spoke English as a second language, which made it a fair test of speech recognition on medical words.
 
 1. **R-7, follow-up refers to the answer.** The trainee said a diagnosis and plan that included pilocarpine drops. The examiner asked: "Why would you start pilocarpine but not wait for the pressure to fall first?"
    - Observed: **pass**. The question is about the trainee's own plan and restates no finding value or eye.
@@ -85,7 +87,7 @@ Run on 25 November 2026 at 23:14 CET by the author, in desktop Chrome on macOS, 
 
 ## Handover
 
-**How the reference note was prepared.** `pnpm prepare:note` reads the PDF with `pdfjs-dist`, reads the text with its page numbers, drops the running header and footer, and cuts it into one passage per paragraph, bullet or table row. Each passage is `{id, pages, heading, text}`. A bullet that runs over a page break is joined into one passage listing both pages and keeping its heading; the sulfonamide-allergy warning (pages 5 and 6, heading "Immediate treatment") is such a case and is covered by a test. The result (about 130 passages) is committed in `data/reference-note.passages.json`.
+**How the reference note was prepared.** `pnpm prepare:note` reads the PDF with `pdfjs-dist`, reads the text with its page numbers, drops the running header and footer, and cuts it into one passage per paragraph, bullet or table row. Each passage is `{id, pages, heading, text}`. A bullet that runs over a page break is joined into one passage listing both pages and keeping its heading; the sulfonamide-allergy warning (pages 5 and 6, heading "Immediate treatment") is such a case and is covered by a test. The result (128 passages after removing header-only rows) is committed in `data/reference-note.passages.json`.
 
 **How passages are selected.** Code, not the model, picks them. It scores passages by keyword match (BM25) against the trainee's own diagnosis, management and follow-up answer only. The case's answer key is not added to the search, because that gave every trainee the same passages (decision D-13). The top five go to Claude together with the answer key, and Claude returns one point and one quote. The page number shown always comes from the passage record. If nothing matches, the trainee sees "no support" with no model call.
 
@@ -103,7 +105,9 @@ Run on 25 November 2026 at 23:14 CET by the author, in desktop Chrome on macOS, 
 - `pnpm check:privacy` leaves two throwaway accounts in Firebase Authentication each run.
 - One document only: the app reads a single case file and one attempt covers that one case.
 - A failed live turn (model error) is not retried by the app; the trainee repeats the sentence. The revision point does offer Retry.
-- Revision point quality varies between runs, as described in check 3.
+- Revision point quality varies between runs, as described in check 3, and so does its time (4 s to over a minute).
+- The closing line after the follow-up answer is built by code with no model call, so its millisecond figure (tens of ms) only measures the app, not Claude.
+- Under Docker the case file is inside the image: editing it needs `docker compose up --build`, or mount your own file and point `VIVA_CASE_PATH` at it.
 - Short excerpt shown for a citation is the model's quote, not the note's own text after the match.
 
 ## AI tools
