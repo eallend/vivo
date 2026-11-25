@@ -77,6 +77,7 @@ One entry per decision: the problem, what we do, why. "By" says who decided: **u
 - Problem: an AI can invent a quote; PDF text has glued words and odd dashes that break exact matching.
 - Decision: the AI must quote word for word. Code checks the quote against the passage, ignoring spacing, dashes, hyphens and quote marks. The page number comes from the passage, never from the AI.
 - Why: a citation is shown only if the note really says it.
+- Added after review: the quote must also be at least 15 characters and 3 words after normalising, so a blank or dash-only quote can never pass. Honest two-word quotes are rejected and shown as "no support".
 
 **D-15 When to say "no support"** (by Claude)
 - Problem: the brief requires telling the trainee when the note doesn't back the point.
