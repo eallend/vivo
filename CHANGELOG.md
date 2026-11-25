@@ -38,9 +38,14 @@ The app has the designed screens: sign-in, attempt list, the viva with visible t
 - 0b32f28 docs: Definition of Done record for Voice Viva
 - 9509633 fix: stop waiting after 3 s when Chrome's speech engine never starts
 - 7a5bb15 docs: record the spoken run and the silent Chrome speech engine
+- 72a0136 fix: show a loader while the session is restored, no page flash before redirect
+- 46f62d8 feat: run Voice Viva with Docker (production build served by srvx)
+- 62d59e9 fix: no Send on an empty box; no automatic retry on the revision point
+- 24c58cf docs: final product and QA checks; write-up and DoD corrected to match them
 
 ## Other changes
 
 - 67f2d4e chore: keep .env.example out of the env ignore rule — the example settings file is now part of the repo.
 - 6527048 chore: project Claude tooling — the planning commands, review agents and shadcn skills travel with the repo.
 - 3133486 docs: keep the build ledger; ignore IDE settings — the decision log from the build is kept for reviewers.
+- a41c276 chore: planning gate hooks — the planning gate now travels with the repo.
