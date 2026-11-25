@@ -8,7 +8,7 @@ How it works in one paragraph: Chrome's built-in speech recognition and speech s
 
 ## What you need
 
-- Node 24 and pnpm.
+- Node 24 and pnpm, or only Docker (see "Run with Docker" below).
 - Desktop Chrome (speech recognition does not work in other browsers) and a microphone. Typing a turn also works.
 - A Firebase project with Email/Password sign-in and a Firestore database. Free plan, about five minutes: follow `docs/firebase-setup.md`.
 - An Anthropic API key.
@@ -25,6 +25,23 @@ pnpm dev
 ```
 
 4. Open http://localhost:3000 in Chrome, sign up with any email and password, and start a viva. Allow the microphone when Chrome asks. After changing `.env.local`, stop and restart `pnpm dev`.
+
+## Run with Docker
+
+The quickest way to run it: no Node or pnpm needed, only Docker (Docker Desktop or OrbStack).
+
+1. Do steps 1 and 2 of "Set up" above: a filled-in `.env.local` and the published `firestore.rules`.
+2. In the project folder:
+
+```
+docker compose up --build
+```
+
+3. Open http://localhost:3000 in Chrome. If port 3000 is taken: `VIVA_PORT=3002 docker compose up --build` and open http://localhost:3002.
+
+Stop it with Ctrl+C, or `docker compose down` if it runs in the background (`-d`). After changing `.env.local`, run `docker compose up --build` again: the Firebase values are built into the browser bundle.
+
+How secrets are handled: `.env.local` is never copied into the image. It is mounted only during the build, to bake in the public Firebase web settings (the `VITE_` lines), and passed to the running container for the server-only values (`ANTHROPIC_API_KEY`, `FIREBASE_PROJECT_ID`). The image runs the production build (`pnpm build`, served by `srvx`, same as `pnpm start`) and contains the case file and the reference-note passages it reads.
 
 ## Checks
 

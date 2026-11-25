@@ -1,0 +1,12 @@
+# Never send secrets or local tooling into the build context
+.env*
+!.env.example
+.git
+.idea
+.claude
+.agents
+.planning
+.superpowers
+node_modules
+dist
+docs/design

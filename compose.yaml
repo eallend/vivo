@@ -1,0 +1,17 @@
+# Run: docker compose up --build   then open http://localhost:3000
+# Needs a filled-in .env.local next to this file (see .env.example).
+# Another port: VIVA_PORT=3002 docker compose up --build
+services:
+  app:
+    build:
+      context: .
+      secrets:
+        - env_local
+    env_file: .env.local
+    ports:
+      - "${VIVA_PORT:-3000}:3000"
+    restart: unless-stopped
+
+secrets:
+  env_local:
+    file: .env.local
