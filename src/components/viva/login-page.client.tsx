@@ -14,6 +14,7 @@ import {
 } from "@/lib/auth-errors"
 import { signIn, signUp } from "@/lib/firebase.client"
 import { useUser } from "@/lib/use-user.client"
+import { PageLoader } from "@/components/viva/page-loader"
 import type { AuthError, AuthMode } from "@/lib/auth-errors"
 
 const COPY: Record<
@@ -87,6 +88,9 @@ export function LoginPage() {
     setMode(mode === "sign_in" ? "sign_up" : "sign_in")
     setError(null)
   }
+
+  // Session still being restored, or already signed in and on the way to /.
+  if (user !== null) return <PageLoader />
 
   const emailError = error?.field === "email" ? error.message : null
   const passwordError = error?.field === "password" ? error.message : null

@@ -24,6 +24,7 @@ import {
 import { createAttempt, listAttempts } from "@/lib/attempts.client"
 import { getIdToken } from "@/lib/firebase.client"
 import { useSignedInUser } from "@/lib/use-user.client"
+import { PageLoader } from "@/components/viva/page-loader"
 import { startViva } from "@/server/viva.functions"
 import type { Attempt } from "@/lib/attempts.client"
 
@@ -121,6 +122,9 @@ export function HomePage() {
     </Button>
   )
   const empty = attempts !== null && attempts.length === 0
+
+  // Session still being restored, or signed out and on the way to /login.
+  if (!user) return <PageLoader />
 
   return (
     <div className="flex min-h-svh flex-col bg-background">
