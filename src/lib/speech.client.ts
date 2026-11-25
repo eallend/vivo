@@ -166,6 +166,8 @@ let speaking: SpeechSynthesisUtterance | null = null
  * always stop, and know the moment is not a real audio start). Resolves when
  * speech ends or fails. Never rejects.
  */
+const START_LIMIT_MS = 3000
+
 export async function speak(
   text: string,
   onStart: (audioStarted: boolean) => void
@@ -203,11 +205,21 @@ export async function speak(
       },
       text.length * 80 + 5000
     )
+    // If audio has not started within START_LIMIT_MS, Chrome's speech engine is
+    // stuck or silent (seen on a real machine: speaking=true, no events at all).
+    // Give up quickly; the text is already on screen.
+    const startGuard = setTimeout(() => {
+      if (!started) {
+        synth.cancel()
+        end()
+      }
+    }, START_LIMIT_MS)
     let ended = false
     const end = () => {
       if (ended) return
       ended = true
       clearTimeout(watchdog)
+      clearTimeout(startGuard)
       if (speaking === u) speaking = null
       start(false)
       resolve()

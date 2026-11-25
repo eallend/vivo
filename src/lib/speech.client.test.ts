@@ -69,6 +69,38 @@ describe("speak tells the caller whether audio really started", () => {
     expect(onStart).toHaveBeenCalledExactlyOnceWith(false)
   })
 
+  it("gives up within 3 s when the engine is stuck and nothing fires", async () => {
+    vi.useFakeTimers()
+    const spoken = installFakeSynth()
+    const onStart = vi.fn()
+    const long = "A long examiner sentence. ".repeat(20)
+    let finished = false
+    const done = speak(long, onStart).then(() => (finished = true))
+    await vi.waitFor(() => expect(spoken).toHaveLength(1))
+    await vi.advanceTimersByTimeAsync(2900)
+    expect(finished).toBe(false)
+    await vi.advanceTimersByTimeAsync(200)
+    await done
+    expect(onStart).toHaveBeenCalledExactlyOnceWith(false)
+  })
+
+  it("keeps speaking past 3 s once audio has started", async () => {
+    vi.useFakeTimers()
+    const spoken = installFakeSynth()
+    const onStart = vi.fn()
+    let finished = false
+    const done = speak("A long examiner sentence. ".repeat(20), onStart).then(
+      () => (finished = true)
+    )
+    await vi.waitFor(() => expect(spoken).toHaveLength(1))
+    spoken[0].onstart?.()
+    await vi.advanceTimersByTimeAsync(5000)
+    expect(finished).toBe(false)
+    spoken[0].onend?.()
+    await done
+    expect(onStart).toHaveBeenCalledExactlyOnceWith(true)
+  })
+
   it("reports false when only the watchdog ends it", async () => {
     vi.useFakeTimers()
     const spoken = installFakeSynth()
