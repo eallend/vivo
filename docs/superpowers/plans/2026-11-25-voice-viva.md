@@ -312,7 +312,7 @@ it("has no header or footer text and unique ids", () => {
 ```ts
 it("R-11 retrieval follows the words", () => {
   expect(retrieve(passages, "pilocarpine iris sphincter ischaemic")[0].passage.pages).toContain(5)
-  expect(retrieve(passages, "ciliochoroidal effusion cycloplegics")[0].passage.pages).toContain(8)
+  expect(retrieve(passages, "cycloplegics hyperosmotics vitrectomy")[0].passage.pages).toContain(8)
   expect(retrieve(passages, "zebra quantum football")).toEqual([])
   expect(retrieve(passages, "pilocarpine pressure iridotomy")).toHaveLength(5)
 })
