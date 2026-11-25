@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Create account, email in use</title>
+<script src="29ff3240-3cd6-44a9-a01a-1de7bd3c9efe"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>/* latin-ext */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/atkinsonhyperlegible/v12/9Bt23C1KxNDXMspQ1lPyU89-1h6ONRlW45G07JIoWQeCbGWn.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("2f776efb-3a3d-4e4f-8419-eedbf774f3ab") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/atkinsonhyperlegible/v12/9Bt73C1KxNDXMspQ1lPyU89-1h6ONRlW45G8Wbc9eiWPRl-uFV24.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("d8585473-46eb-46e5-822d-daaaa24778b5") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+body{margin:0}
+a{color:#0B6B74}a:hover{color:#0F2A2E}
+@keyframes vvpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.vv-pulse{animation:vvpulse 1.4s ease-in-out infinite}
+@keyframes vvspin{to{transform:rotate(360deg)}}
+.vv-spin{animation:vvspin 1.2s linear infinite}
+</style>
+</helmet>
+<div style="position: relative; box-sizing: border-box; background: #F1F6F6; color: #0F2A2E; font-family: 'Atkinson Hyperlegible', Verdana, sans-serif; font-size: 16px; min-height: 100vh; padding: 48px 24px; display: flex; align-items: center; justify-content: center">
+<div style="width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; align-items: center; gap: 12px"><span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 50%; background: #0B6B74; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="22" height="22" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg></span><span style="font-size: 24px; font-weight: 700; letter-spacing: -0.01em">Voice Viva</span></div>
+<form style="box-sizing: border-box; padding: 28px; border-radius: 14px; background: #FFFFFF; border: 1px solid #D0DFDF; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 6px"><h1 style="margin: 0; font-size: 24px; font-weight: 700; line-height: 1.2">Create your account</h1><p style="margin: 0; font-size: 16px; color: #4A6165; line-height: 1.45">Email and a password are all you need.</p></div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="email" style="font-size: 14px; font-weight: 700">Email</label>
+<input id="email" type="email" value="a.rahman@example.com" aria-invalid="true" style="height: 40px; box-sizing: border-box; padding: 0 12px; border-radius: 8px; border: 2px solid #B42318; background: #FFFFFF; color: #0F2A2E; font-family: inherit; font-size: 16px">
+<div id="email-err" style="display: flex; align-items: flex-start; gap: 6px; font-size: 14px; font-weight: 700; color: #B42318; line-height: 1.35"><svg aria-hidden="true" width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px"><path d="M12 4l9 16H3l9-16z"></path><path d="M12 10v4M12 17v.5"></path></svg><span>This email is already in use. Sign in instead.</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="password" style="font-size: 14px; font-weight: 700">Password</label>
+<input id="password" type="password" value="longenoughpw" style="height: 40px; box-sizing: border-box; padding: 0 12px; border-radius: 8px; border: 1px solid #7D9598; background: #FFFFFF; color: #0F2A2E; font-family: inherit; font-size: 16px">
+<div style="font-size: 14px; color: #4A6165">At least 8 characters</div>
+</div>
+<button type="button" style="height: 40px; border-radius: 8px; border: 1px solid #0B6B74; background: #0B6B74; color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700">Create account</button>
+<div style="font-size: 16px; color: #4A6165; text-align: center">Already have an account? <a href="SignIn.dc.html">Sign in</a></div>
+</form>
+<p style="margin: 0; font-size: 14px; color: #4A6165; text-align: center; line-height: 1.45">Fictional case for exam practice. Not clinical guidance.<br>Voice needs desktop Chrome; you can type instead.</p>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:800}}">
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+
+
+</body></html>

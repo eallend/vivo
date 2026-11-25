@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>UI kit: 2 · globals.css</title>
+<script src="3a3725fe-6767-4ae2-8a59-76b43994e75b"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>/* latin-ext */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/atkinsonhyperlegible/v12/9Bt23C1KxNDXMspQ1lPyU89-1h6ONRlW45G07JIoWQeCbGWn.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("24880091-db64-4e4a-82f6-20f18b7dca7b") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/atkinsonhyperlegible/v12/9Bt73C1KxNDXMspQ1lPyU89-1h6ONRlW45G8Wbc9eiWPRl-uFV24.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("2fc7b074-9f7d-43e8-8b8e-39d8d466ba68") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+body{margin:0}
+a{color:#0B6B74}a:hover{color:#0F2A2E}
+@keyframes vvpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.vv-pulse{animation:vvpulse 1.4s ease-in-out infinite}
+@keyframes vvspin{to{transform:rotate(360deg)}}
+.vv-spin{animation:vvspin 1.2s linear infinite}
+</style>
+</helmet>
+<div style="position: relative; box-sizing: border-box; background: #F1F6F6; color: #0F2A2E; font-family: 'Atkinson Hyperlegible', Verdana, sans-serif; font-size: 16px; width: 1280px; min-height: 1500px; padding: 48px; display: flex; flex-direction: column; gap: 40px">
+<header style="display: flex; align-items: center; gap: 20px">
+<div style="width: 64px; height: 64px; flex-shrink: 0; border-radius: 14px; background: #0B6B74; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700">2</div>
+<div style="display: flex; flex-direction: column; gap: 4px"><h1 style="margin: 0; font-size: 30px; font-weight: 700; line-height: 1.2">globals.css</h1><p style="margin: 0; font-size: 16px; color: #4A6165; line-height: 1.4">The same tokens as paste-ready CSS for Tailwind v4. Light theme only; no .dark block because the app has no dark mode.</p></div>
+</header><div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start"><pre style="margin: 0; box-sizing: border-box; padding: 20px; border-radius: 14px; background: #0F2A2E; color: #E6F0F1; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere">:root {
+  --radius: 0.625rem;
+  --background: oklch(0.969 0.005 197.1); /* #F1F6F6 */
+  --foreground: oklch(0.266 0.033 208.2); /* #0F2A2E */
+  --card: oklch(1.000 0 0); /* #FFFFFF */
+  --card-foreground: oklch(0.266 0.033 208.2); /* #0F2A2E */
+  --popover: oklch(1.000 0 0); /* #FFFFFF */
+  --popover-foreground: oklch(0.266 0.033 208.2); /* #0F2A2E */
+  --primary: oklch(0.483 0.080 205.3); /* #0B6B74 */
+  --primary-foreground: oklch(1.000 0 0); /* #FFFFFF */
+  --secondary: oklch(0.942 0.011 197.0); /* #E4EEEE */
+  --secondary-foreground: oklch(0.266 0.033 208.2); /* #0F2A2E */
+  --muted: oklch(0.942 0.011 197.0); /* #E4EEEE */
+  --muted-foreground: oklch(0.475 0.028 209.3); /* #4A6165 */
+  --accent: oklch(0.948 0.015 202.1); /* #E3F1F2 */
+  --accent-foreground: oklch(0.266 0.033 208.2); /* #0F2A2E */
+  --destructive: oklch(0.500 0.182 29.5); /* #B42318 */
+  --border: oklch(0.892 0.016 196.9); /* #D0DFDF */
+  --input: oklch(0.652 0.028 205.8); /* #7D9598 */
+  --ring: oklch(0.483 0.080 205.3); /* #0B6B74 */
+  --sidebar: oklch(0.986 0.003 197.1); /* #F8FBFB */
+  --sidebar-foreground: oklch(0.266 0.033 208.2); /* #0F2A2E */
+  --sidebar-border: oklch(0.892 0.016 196.9); /* #D0DFDF */
+
+  /* Voice Viva extensions */
+  --eye-right: oklch(0.379 0.138 265.5); /* #1E3A8A */
+  --eye-right-foreground: oklch(1.000 0 0); /* #FFFFFF */
+  --eye-left: oklch(0.978 0.014 64.3); /* #FFF6EE */
+  --eye-left-foreground: oklch(0.470 0.143 37.3); /* #9A3412 */
+  --recording: oklch(0.554 0.170 32.1); /* #C2402A */
+  --recording-foreground: oklch(1.000 0 0); /* #FFFFFF */
+  --recording-muted: oklch(0.949 0.019 33.4); /* #FBEAE6 */
+  --recording-muted-foreground: oklch(0.520 0.160 32.3); /* #B23A25 */
+  --speaking: oklch(0.266 0.033 208.2); /* #0F2A2E */
+  --speaking-foreground: oklch(1.000 0 0); /* #FFFFFF */
+  --speaking-muted-foreground: oklch(0.864 0.019 205.3); /* #C5D6D8 */
+  --warning: oklch(0.974 0.030 88.4); /* #FFF6E0 */
+  --warning-foreground: oklch(0.508 0.108 73.3); /* #8A5A00 */
+}</pre><pre style="margin: 0; box-sizing: border-box; padding: 20px; border-radius: 14px; background: #0F2A2E; color: #E6F0F1; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere">@theme inline {
+  --font-sans: "Atkinson Hyperlegible", Verdana, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-eye-right: var(--eye-right);
+  --color-eye-right-foreground: var(--eye-right-foreground);
+  --color-eye-left: var(--eye-left);
+  --color-eye-left-foreground: var(--eye-left-foreground);
+  --color-recording: var(--recording);
+  --color-recording-foreground: var(--recording-foreground);
+  --color-recording-muted: var(--recording-muted);
+  --color-recording-muted-foreground: var(--recording-muted-foreground);
+  --color-speaking: var(--speaking);
+  --color-speaking-foreground: var(--speaking-foreground);
+  --color-speaking-muted-foreground: var(--speaking-muted-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}</pre></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1500}}">
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+
+
+</body></html>
