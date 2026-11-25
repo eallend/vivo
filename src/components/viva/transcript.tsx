@@ -10,8 +10,30 @@ export interface TranscriptEntry {
 }
 
 /**
+ * Stored in `turnTimingsMs` for an examiner reply whose audio never started
+ * (speech failed or the watchdog gave up), so no false time is shown and later
+ * replies keep their own times.
+ */
+export const UNTIMED_MS = -1
+
+/**
+ * Adds the turn time for the latest examiner reply: from `startedAt` (text
+ * sent) to `now` (audio start), or `UNTIMED_MS` when the audio never started.
+ */
+export function withTurnTime<T extends Pick<Attempt, "turnTimingsMs">>(
+  a: T,
+  startedAt: number,
+  now: number,
+  audioStarted: boolean
+): T {
+  const ms = audioStarted ? Math.round(now - startedAt) : UNTIMED_MS
+  return { ...a, turnTimingsMs: [...a.turnTimingsMs, ms] }
+}
+
+/**
  * The opening prompt followed by every saved turn. The n-th examiner turn
- * gets `turnTimingsMs[n]`; the opening prompt has no time.
+ * gets `turnTimingsMs[n]`; the opening prompt, and a reply stored as
+ * `UNTIMED_MS`, have no time.
  */
 export function transcriptEntries(
   a: Pick<Attempt, "openingPrompt" | "turns" | "turnTimingsMs">
@@ -21,8 +43,9 @@ export function transcriptEntries(
     { role: "examiner", text: a.openingPrompt, ms: null },
     ...a.turns.map((t): TranscriptEntry => {
       if (t.role === "trainee") return { role: t.role, text: t.text, ms: null }
-      const ms = a.turnTimingsMs[examinerIndex] ?? null
+      const stored = a.turnTimingsMs.at(examinerIndex)
       examinerIndex += 1
+      const ms = stored === undefined || stored < 0 ? null : stored
       return { role: t.role, text: t.text, ms }
     }),
   ]

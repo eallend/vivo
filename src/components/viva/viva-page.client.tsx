@@ -34,6 +34,7 @@ import {
   ReviewTranscript,
   transcriptEntries,
   turnCount,
+  withTurnTime,
 } from "@/components/viva/transcript"
 import { TranscriptBubble } from "@/components/viva/transcript-bubble"
 import { TurnDock } from "@/components/viva/turn-dock"
@@ -287,7 +288,15 @@ function SessionScreen({
   const [voiceSupported] = useState(speechSupported)
   const [micBlocked, setMicBlocked] = useState(false)
   const voice = voiceSupported && !micBlocked
-  const [turnState, setTurnState] = useState<TurnState>("your_turn")
+  const [turnState, setTurnStateView] = useState<TurnState>("your_turn")
+  // Read synchronously by every entry point, so a second turn can never start
+  // while one is running, whatever button was pressed.
+  const turnStateRef = useRef<TurnState>("your_turn")
+  const setTurnState = (s: TurnState) => {
+    turnStateRef.current = s
+    setTurnStateView(s)
+  }
+  const canStartTurn = () => turnStateRef.current === "your_turn"
   const [openingSpeaking, setOpeningSpeaking] = useState(false)
   const [pendingTrainee, setPendingTrainee] = useState<string | null>(null)
   const [notice, setNotice] = useState<Notice | null>(null)
@@ -345,22 +354,24 @@ function SessionScreen({
     )
     setPendingTrainee(null)
     commit(next)
+    // Saved now, while the examiner speaks, so a reload mid-speech loses nothing.
+    const savedTurn = persist(next)
     setTurnState("examiner_speaking")
 
-    // The turn time runs from sending the text to the examiner's audio starting.
+    // The turn time runs from sending the text to the examiner's audio
+    // starting; if the audio never starts, no time is recorded.
     let spoken: Promise<void> = Promise.resolve()
-    const ms = await new Promise<number>((resolve) => {
-      spoken = speak(reply.spoken, () =>
-        resolve(Math.round(performance.now() - startedAt))
-      )
-    })
+    const start = await new Promise<{ at: number; audioStarted: boolean }>(
+      (resolve) => {
+        spoken = speak(reply.spoken, (audioStarted) =>
+          resolve({ at: performance.now(), audioStarted })
+        )
+      }
+    )
     if (halted()) return
-    const timed: Attempt = {
-      ...next,
-      turnTimingsMs: [...next.turnTimingsMs, ms],
-    }
+    const timed = withTurnTime(next, startedAt, start.at, start.audioStarted)
     commit(timed)
-    await Promise.all([spoken, persist(timed)])
+    await Promise.all([spoken, savedTurn, persist(timed)])
     if (halted()) return
     setNewIds(new Set())
     if (timed.status === "finished") onFinished()
@@ -368,6 +379,7 @@ function SessionScreen({
   }
 
   async function onSpeak() {
+    if (!canStartTurn()) return
     setNotice(null)
     setTurnState("listening")
     const heard = await listen()
@@ -387,11 +399,13 @@ function SessionScreen({
   }
 
   function onSendTyped(text: string) {
+    if (!canStartTurn()) return
     setTypedText("")
     void runTurn(text)
   }
 
   function retryMicrophone() {
+    if (!canStartTurn()) return
     setMicBlocked(false)
     void onSpeak()
   }
@@ -513,7 +527,11 @@ function SessionScreen({
           icon={<RiMicOffLine />}
           title="Microphone is blocked."
           action={
-            <Button variant="outline" onClick={retryMicrophone}>
+            <Button
+              variant="outline"
+              disabled={turnState !== "your_turn"}
+              onClick={retryMicrophone}
+            >
               <span>Try again</span>
             </Button>
           }
@@ -533,7 +551,8 @@ function SessionScreen({
             </Button>
           }
         >
-          Check your connection. The viva can continue once it is saved.
+          Check your connection, then save again. You can keep going
+          meanwhile.
         </StatusBanner>
       )}
 

@@ -160,16 +160,21 @@ function loadVoices(synth: SpeechSynthesis): Promise<SpeechSynthesisVoice[]> {
 let speaking: SpeechSynthesisUtterance | null = null
 
 /**
- * Speaks `text` with an en-GB voice when one exists. `onStart` runs when audio
- * starts (or at once if speech cannot play, so callers' timers always stop);
- * resolves when speech ends or fails. Never rejects.
+ * Speaks `text` with an en-GB voice when one exists. `onStart` runs exactly
+ * once: with `true` when audio starts, or with `false` when speech cannot play,
+ * fails, or the watchdog gives up before `start` fired (so callers' timers
+ * always stop, and know the moment is not a real audio start). Resolves when
+ * speech ends or fails. Never rejects.
  */
-export async function speak(text: string, onStart: () => void): Promise<void> {
+export async function speak(
+  text: string,
+  onStart: (audioStarted: boolean) => void
+): Promise<void> {
   let started = false
-  const start = () => {
+  const start = (audioStarted: boolean) => {
     if (started) return
     started = true
-    onStart()
+    onStart(audioStarted)
   }
 
   if (
@@ -177,7 +182,7 @@ export async function speak(text: string, onStart: () => void): Promise<void> {
     !("speechSynthesis" in window) ||
     text.trim() === ""
   ) {
-    start()
+    start(false)
     return
   }
   const synth = window.speechSynthesis
@@ -204,10 +209,10 @@ export async function speak(text: string, onStart: () => void): Promise<void> {
       ended = true
       clearTimeout(watchdog)
       if (speaking === u) speaking = null
-      start()
+      start(false)
       resolve()
     }
-    u.onstart = start
+    u.onstart = () => start(true)
     u.onend = end
     u.onerror = end
     speaking = u
