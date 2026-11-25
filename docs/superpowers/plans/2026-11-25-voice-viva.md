@@ -21,11 +21,16 @@ Must not change:
 - `.env.local` is never committed; `ANTHROPIC_API_KEY` appears in no client bundle (searching the build output for "sk-ant" finds nothing).
 - Nothing in the Non-goals list is built: hosting or deployment; more than one case; mobile or non-Chrome browsers; interrupting the examiner; hands-free listening; scoring the trainee; password reset; embeddings or a vector store; server-side Firestore writes; a "is that your final answer?" confirmation step; cleaning up the test accounts the privacy check creates.
 
+Acceptance criteria (design §10(a)): every row R-1 to R-16 in design section 4. R-1 to R-4, R-6, R-11 to R-14 and the test halves of R-5 and R-7 pass under `pnpm test`. R-5's bundle half by the search in Task 6 Step 5. R-10 by `pnpm check:privacy` (creates two throwaway accounts in the Firebase project). R-7's manual half, R-8, R-9, R-15 by the manual steps written in `docs/submission/write-up.md` with observed results. R-16 by the files existing with those sections.
+
+Completion record: before the branch is finished, `docs/reviews/2026-11-25-voice-viva-design-dod.md` exists and lists every Definition of Done item with the command run, its output and pass / fail / not verified. Anything not checked is "not verified".
+
 Working rules:
 
 - Model ids: `claude-haiku-5-5` (turn), `claude-opus-5-5` (revision), read from `VIVA_TURN_MODEL` and `VIVA_REVISION_MODEL` with those defaults. Never add date suffixes.
 - Claude calls use the official SDK: `client.messages.parse` with `zodOutputFormat` from `@anthropic-ai/sdk/helpers/zod`. No `temperature`, no forced `tool_choice`, no `budget_tokens`.
-- Relative imports in `scripts/` and tests carry the `.ts` extension; app code may use `@/`.
+- Imports: files under `scripts/`, `src/lib/viva/`, `src/lib/revision/` and `src/server/` (except `viva.functions.ts`), and their tests, use relative imports with the `.ts` extension and never `@/`, because `scripts/check-live.ts` loads them with plain Node. JSON is imported with `with { type: "json" }` or read with `fs`. Routes, components and `*.client.ts` files may use `@/`.
+- Claude client: `new Anthropic({ timeout: 15_000, maxRetries: 1 })` for the turn call and `{ timeout: 60_000, maxRetries: 1 }` for the revision call.
 - Firebase and speech code run only in the browser: routes that use them set `ssr: false`.
 - Commits: Conventional Commits, one per task, with an explicit pathspec (`git commit -m "..." -- <paths>`). Never `git add -A`.
 - A failure in a file a task does not own is reported, not fixed.
@@ -50,7 +55,7 @@ User hand-offs:
 - **H-2 (before Task 9):** put the chosen Claude Design sketch (screenshots or exported HTML) in `docs/design/`. If absent when Task 9 starts, Task 9 is skipped and reported.
 - **H-3 (during Task 10):** a five-minute spoken run in Chrome following `docs/submission/write-up.md`, to record R-7, R-8, R-9, R-15. An agent cannot use the microphone.
 
-Order: Task 1 first. Then Tasks 2, 3, 4 and 7 can run in parallel. Task 5 needs 4. Task 6 needs 2, 3, 5. Task 8 needs 6, 7. Task 9 needs 8. Task 10 last.
+Order: Task 1 first. Then Tasks 2, 4 and 7 can run in parallel. Task 3 needs 2. Task 5 needs 4. Task 6 needs 2, 3, 5. Task 8 needs 6, 7. Task 9 needs 8. Task 10 last.
 
 ## File map
 
@@ -203,7 +208,7 @@ it("answers history from the patient block", () => {
 - Test: `src/lib/viva/flow.test.ts`
 
 **Interfaces:**
-- Consumes: `resolveFindings`, `formatHistory`, `UNKNOWN_REQUEST_TEXT` (Task 2 signatures above; if Task 2 is not merged yet, build against those signatures).
+- Consumes: `resolveFindings`, `formatHistory`, `UNKNOWN_REQUEST_TEXT` from Task 2, which must be committed first.
 - Produces:
   - `guardFollowUp(question: string | null, ideas: string[]): string`
   - `buildReply(c: CaseData, status: VivaStatus, i: Interpretation): ExaminerReply`
@@ -307,7 +312,7 @@ it("has no header or footer text and unique ids", () => {
 ```ts
 it("R-11 retrieval follows the words", () => {
   expect(retrieve(passages, "pilocarpine iris sphincter ischaemic")[0].passage.pages).toContain(5)
-  expect(retrieve(passages, "topiramate myopic shift")[0].passage.pages).not.toContain(5)
+  expect(retrieve(passages, "ciliochoroidal effusion cycloplegics")[0].passage.pages).toContain(8)
   expect(retrieve(passages, "zebra quantum football")).toEqual([])
   expect(retrieve(passages, "pilocarpine pressure iridotomy")).toHaveLength(5)
 })
@@ -345,7 +350,7 @@ it("R-12 quote must be in the note", () => {
     - `REPEAT_TEXT = "Sorry, I didn't catch that. Please say it again."`
   - In `viva.functions.ts`: `startViva`, `takeTurn`, `makeRevisionPoint`, each `createServerFn({ method: "POST" })` taking `{ idToken, ...input }`, calling `verifyIdToken(idToken, process.env.FIREBASE_PROJECT_ID!)` first, then the handler with real deps. Check the installed type for the validator method name (`inputValidator` or `validator`).
 
-Rules: `handleTurn` with blank `text` returns `REPEAT_TEXT`, same status, no `interpret` call. If `interpret` throws, same result. `handleRevision` with blank `answerText` returns `no_support` / `no_answer` without retrieval; with no retrieved passages returns `no_passages` without calling `revise`; if `revise` throws returns `model_error`; otherwise `checkCitation`.
+Rules: `handleTurn` with blank `text` returns `REPEAT_TEXT`, same status, no `interpret` call. If `interpret` throws or rejects (including the SDK's timeout error), same result. `handleRevision` with blank `answerText` returns `no_support` / `no_answer` without retrieval; with no retrieved passages returns `no_passages` without calling `revise`; if `revise` throws returns `model_error`; otherwise `checkCitation`.
 
 - [ ] **Step 1: Write the failing tests:**
 
@@ -382,7 +387,7 @@ it("revision point: no answer, no passages, model error, supported", async () =>
   3. Revision for "This is acute angle closure. I would give pilocarpine straight away and acetazolamide." → prints retrieved pages, the passage id, pages and quote; passes if status is `supported` and the quote is in that passage, or prints the no-support reason and fails.
   It also prints each call's duration, and reads the model ids from the environment so Sonnet can be timed with `VIVA_TURN_MODEL=claude-sonnet-5-5 pnpm check:live`.
 - [ ] **Step 4:** Run `pnpm check:live`; expect three PASS lines. If a model id is rejected, report the error text and stop. Start `pnpm dev`, confirm a server function can read `process.env.ANTHROPIC_API_KEY`; if it is undefined, load `.env.local` in `vite.config.ts` with Vite's `loadEnv` into `process.env`.
-- [ ] **Step 5:** Run all four gates. After `pnpm build`, search the build output's client directory for "anticholinergic antihistamine" and "sk-ant"; expect no match. Commit: `feat: server functions for viva turns and the revision point`.
+- [ ] **Step 5:** Run all four gates. After `pnpm build`, find the client output folder (`ls -d dist/client .output/public 2>/dev/null`; record which exists in the report), then run `grep -rl -e "sk-ant" -e "anticholinergic antihistamine" <that folder>`. Expected: no output, exit status 1. Commit: `feat: server functions for viva turns and the revision point`.
 
 ### Task 7: Sign-in, attempt storage, privacy (R-9 storage half, R-10)
 

@@ -6,15 +6,33 @@ Sources: plan-breaker subagent (simulated execution against the repo) and the au
 
 | ID | Severity | Finding | Evidence | Author's assessment | Decision |
 |---|---|---|---|---|---|
-| P1 | High | Task 5 test expects "topiramate myopic shift" not to rank page 5 first, but page 5 will win. Design R-11 has the same flaw. | Note p.5 differential table row "Topiramate-induced angle closure: Both eyes, sudden myopic shift, recent start of topiramate" is short and matches every query word. | Confirmed. The row is on page 5 of the PDF. | pending |
-| P2 | High | `pnpm check:live` runs with plain Node, which cannot resolve `@/` imports or imports without `.ts`; the plan allows both in app code the script reaches. | Plan "Working rules"; `paths` in tsconfig.json applies to Vite and tsc only. | Confirmed. | pending |
-| P3 | High | Global Constraints omit part (a) of the Definition of Done (acceptance rows, bundle search, privacy check, manual steps). | Design §10(a); plan Global Constraints. | Confirmed as an omission. Every row is covered by a task (table below), so the risk is to reviewers' view, not to coverage. | pending |
-| P4 | Medium | No step writes `docs/reviews/2026-11-25-voice-viva-design-dod.md`, required by the project CLAUDE.md. | CLAUDE.md, Planning gate, third bullet. | not assessed (Medium) | pending |
-| P5 | Medium | Task 3 is marked parallel with Task 2 but its tests need Task 2's real output. | Plan "Order" line; Task 3 mixed-turn test. | not assessed (Medium) | pending |
-| P6 | Medium | The bundle search in Task 6 has no exact command; the client output folder is unknown. | Design U-5. | not assessed (Medium) | pending |
-| P7 | Medium | No timeout on the Claude calls; the SDK default is 10 minutes with retries, so a slow call never reaches the "say it again" reply. | Task 6 interface specs. | not assessed (Medium) | pending |
-| P8 | Low | Task 9 (apply the design sketch) serves no numbered requirement. | Coverage table. | It implements the user's design hand-off (design §3). Not scope creep. | pending |
-| P9 | Low | R-8 (turn state visible, mic disabled while the examiner speaks) has no automated test. | Coverage table. | The design defines R-8 as a manual check. | pending |
+| P1 | High | Task 5 test expects "topiramate myopic shift" not to rank page 5 first, but page 5 will win. Design R-11 has the same flaw. | Note p.5 differential table row "Topiramate-induced angle closure: Both eyes, sudden myopic shift, recent start of topiramate" is short and matches every query word. | Confirmed. The row is on page 5 of the PDF. | see Decisions |
+| P2 | High | `pnpm check:live` runs with plain Node, which cannot resolve `@/` imports or imports without `.ts`; the plan allows both in app code the script reaches. | Plan "Working rules"; `paths` in tsconfig.json applies to Vite and tsc only. | Confirmed. | see Decisions |
+| P3 | High | Global Constraints omit part (a) of the Definition of Done (acceptance rows, bundle search, privacy check, manual steps). | Design §10(a); plan Global Constraints. | Confirmed as an omission. Every row is covered by a task (table below), so the risk is to reviewers' view, not to coverage. | see Decisions |
+| P4 | Medium | No step writes `docs/reviews/2026-11-25-voice-viva-design-dod.md`, required by the project CLAUDE.md. | CLAUDE.md, Planning gate, third bullet. | not assessed (Medium) | see Decisions |
+| P5 | Medium | Task 3 is marked parallel with Task 2 but its tests need Task 2's real output. | Plan "Order" line; Task 3 mixed-turn test. | not assessed (Medium) | see Decisions |
+| P6 | Medium | The bundle search in Task 6 has no exact command; the client output folder is unknown. | Design U-5. | not assessed (Medium) | see Decisions |
+| P7 | Medium | No timeout on the Claude calls; the SDK default is 10 minutes with retries, so a slow call never reaches the "say it again" reply. | Task 6 interface specs. | not assessed (Medium) | see Decisions |
+| P8 | Low | Task 9 (apply the design sketch) serves no numbered requirement. | Coverage table. | It implements the user's design hand-off (design §3). Not scope creep. | see Decisions |
+| P9 | Low | R-8 (turn state visible, mic disabled while the examiner speaks) has no automated test. | Coverage table. | The design defines R-8 as a manual check. | see Decisions |
+
+## Decisions
+
+By the user on 2026-11-25 ("1 - yes"), after seeing the findings and proposed fixes.
+
+| ID | Decision |
+|---|---|
+| P1 | fix: query changed to "ciliochoroidal effusion cycloplegics" → page 8, in the plan and in design R-11 |
+| P2 | fix: `.ts` relative imports, no `@/`, in every file the live check loads |
+| P3 | fix: design §10(a) copied into Global Constraints |
+| P4 | fix: completion record added to Global Constraints |
+| P5 | fix: Task 3 depends on Task 2 |
+| P6 | fix: exact search command in Task 6 Step 5 |
+| P7 | fix: 15 s and 60 s client timeouts, one retry |
+| P8 | no change |
+| P9 | no change |
+
+Also decided: execution is subagent-driven; optimize-it level is `standard`.
 
 ## Coverage: requirement → task → test
 

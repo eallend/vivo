@@ -70,7 +70,7 @@ Submit a working local demo for the Eye Academy contract-developer exercise. Rev
 | R-8 | Turn state is visible | Manual check in Chrome: indicator shows each of the four states; mic button is disabled while the examiner speaks |
 | R-9 | Attempt survives refresh | Manual check: reload the page, open the attempt, transcript and revealed findings match |
 | R-10 | Attempts are private | Script `pnpm check:privacy`: user B reading user A's attempt over the Firestore REST API gets HTTP 403 |
-| R-11 | Retrieval follows the trainee's words | Test: query "pilocarpine iris sphincter ischaemic" ranks a page-5 passage first; a query about "topiramate myopic shift" ranks a different page first; a query of words absent from the note returns nothing |
+| R-11 | Retrieval follows the trainee's words | Test: query "pilocarpine iris sphincter ischaemic" ranks a page-5 passage first; query "ciliochoroidal effusion cycloplegics" ranks a page-8 passage first; a query of words absent from the note returns nothing |
 | R-12 | Quote must exist in the note | Test on the real passages file: a quote typed as "non-pupil-block mechanisms" matches the passage extracted as "Non-pupilblock mechanisms"; an invented quote becomes "no support" |
 | R-13 | Passages carry correct pages | Test: the passage containing "Lie the patient flat" has page 5; "Prophylactic LPI in the fellow eye" has page 6; the passage containing "Check for sulfonamide allergy" lists pages 5 and 6 and has heading "Immediate treatment" |
 | R-14 | Only signed-in users reach Claude | Test: the token verifier rejects a missing token and a token with the wrong audience |
