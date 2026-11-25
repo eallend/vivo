@@ -17,3 +17,6 @@ todos.json
 *.tsbuildinfo
 .planning/
 .superpowers/
+
+# IDE settings
+.idea/
