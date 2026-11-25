@@ -48,9 +48,16 @@ export function speechSupported(): boolean {
 
 let current: Recognition | null = null
 
+const LISTEN_LIMIT_MS = 60_000
+
 function toListenError(code: string): ListenError {
   if (code === "no-speech") return "no_speech"
-  if (code === "not-allowed" || code === "service-not-allowed") {
+  // audio-capture = no microphone found; the trainee fixes it the same way.
+  if (
+    code === "not-allowed" ||
+    code === "service-not-allowed" ||
+    code === "audio-capture"
+  ) {
     return "mic_blocked"
   }
   return "other"
@@ -76,9 +83,18 @@ export function listen(): Promise<ListenResult> {
     let text = ""
     let error: ListenError = "none"
     let settled = false
+    // A stuck recogniser must not keep the screen in "Listening": stop after
+    // LISTEN_LIMIT_MS, and give up entirely if `end` still does not arrive.
+    const stopTimer = setTimeout(() => rec.stop(), LISTEN_LIMIT_MS)
+    const giveUpTimer = setTimeout(() => {
+      rec.abort()
+      finish()
+    }, LISTEN_LIMIT_MS + 3000)
     const finish = () => {
       if (settled) return
       settled = true
+      clearTimeout(stopTimer)
+      clearTimeout(giveUpTimer)
       if (current === rec) current = null
       const heard = text.trim()
       resolve({
@@ -156,7 +172,11 @@ export async function speak(text: string, onStart: () => void): Promise<void> {
     onStart()
   }
 
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+  if (
+    typeof window === "undefined" ||
+    !("speechSynthesis" in window) ||
+    text.trim() === ""
+  ) {
     start()
     return
   }
@@ -168,7 +188,21 @@ export async function speak(text: string, onStart: () => void): Promise<void> {
     const u = new SpeechSynthesisUtterance(text)
     u.lang = "en-GB"
     if (voice) u.voice = voice
+    // Chrome sometimes never fires `end` (right after cancel(), long remote
+    // voices). Without this the viva would stay in "Examiner speaking" for good.
+    // Budget: ~80 ms per character (slow speech) plus 5 s for start-up.
+    const watchdog = setTimeout(
+      () => {
+        synth.cancel()
+        end()
+      },
+      text.length * 80 + 5000
+    )
+    let ended = false
     const end = () => {
+      if (ended) return
+      ended = true
+      clearTimeout(watchdog)
       if (speaking === u) speaking = null
       start()
       resolve()
