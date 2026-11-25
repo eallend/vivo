@@ -195,7 +195,7 @@ export function TurnDock({
             variant="outline"
             size="icon-lg"
             aria-label="Send typed turn"
-            disabled={!canType}
+            disabled={!canType || typedText.trim() === ""}
             className={cn(
               "disabled:border-border disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100",
               typingFirst && "border-primary",

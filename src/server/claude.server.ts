@@ -28,11 +28,12 @@ let turnClient: Anthropic | null = null
 let revisionClient: Anthropic | null = null
 
 // Created on first use so the API key is read after the environment is loaded.
-// No retry on the turn call: a 15 s timeout plus a retry could keep the trainee waiting 30 s.
+// No retry on either call: a retry doubles the worst-case wait (turn 15 s -> 30 s,
+// revision 60 s -> 2 min). A failed revision point offers the trainee a Retry button.
 const getTurnClient = () =>
   (turnClient ??= new Anthropic({ timeout: 15_000, maxRetries: 0 }))
 const getRevisionClient = () =>
-  (revisionClient ??= new Anthropic({ timeout: 60_000, maxRetries: 1 }))
+  (revisionClient ??= new Anthropic({ timeout: 60_000, maxRetries: 0 }))
 
 const InterpretationSchema = z.object({
   findingIds: z.array(z.string()),
