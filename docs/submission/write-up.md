@@ -68,18 +68,20 @@ The rule that the quote must really exist is also tested without any model call:
 
 ## Manual spoken run (H-3)
 
-Not yet run. This needs a person with a microphone in desktop Chrome, so I could not do it. Start `pnpm dev`, open http://localhost:3000, sign in and allow the microphone.
+Run on 25 November 2026 at 23:14 CET by the author, in desktop Chrome on macOS, with the microphone allowed. The trainee spoke English as a second language, which made it a fair test of speech recognition on medical words.
 
-1. **R-7, follow-up refers to the answer.** Ask for a finding by voice, then say a diagnosis and plan, for example "I think this is acute angle closure and I would start acetazolamide." Listen to the follow-up question. Expected: it refers to what you said and does not restate a finding value or an eye.
-   - Observed: not yet run.
-2. **R-8, turn states.** During the same viva watch the indicator across one turn. Expected: your turn, then listening while you talk, then thinking, then examiner speaking, and the microphone button is disabled while the examiner speaks.
-   - Observed: not yet run.
-3. **R-9, attempt survives refresh.** After at least two turns, reload the page and open the attempt from "My attempts". Expected: transcript and revealed findings match what you saw before the reload.
-   - Observed: not yet run.
-4. **R-15, turn is measured.** After a spoken turn, read the millisecond figure on that turn; then reopen the attempt. Expected: a figure appears after the spoken turn and is still there after reopening.
-   - Observed: not yet run.
+1. **R-7, follow-up refers to the answer.** The trainee said a diagnosis and plan that included pilocarpine drops. The examiner asked: "Why would you start pilocarpine but not wait for the pressure to fall first?"
+   - Observed: **pass**. The question is about the trainee's own plan and restates no finding value or eye.
+2. **R-8, turn states.** Observed: **partly verified**. Listening and thinking showed as expected, but the examiner state stayed on screen for a long time because no audio played (see the note below). The typed Playwright runs saw all four states, and End viva disabled while thinking.
+3. **R-9, attempt survives refresh.** After the viva finished, the page was reloaded and the attempt reopened from "My attempts".
+   - Observed: **pass**. All 9 turns, the revealed finding (right IOP 58 mmHg) and the revision point (quoted from reference note page 7) were identical.
+4. **R-15, turn is measured.** Observed: **not verified on this machine**. No millisecond figure appeared, because audio never started, so the app correctly stored "no time" instead of a wrong number. Measured turn times from `pnpm check:live` (no browser audio) are in "Model choice and responsiveness".
 
-Also worth noting while there: how the voice reads "6/36", "mmHg" and "+3.50 DS" (design question U-3), and whether Chrome hears "gonioscopy" correctly (U-2). Not yet run.
+**Why there was no audio.** Chrome's speech synthesis produced no sound on this Mac, even outside the app. A bare console test (`speechSynthesis.speak` with the local "Daniel" voice, after `cancel()`) fired no start, end or error event, and `speechSynthesis.speaking` stayed `true`. The same happened after quitting and reopening Chrome and in an Incognito window, while the Mac's own `say hello` worked. So this is the browser's speech engine on that machine, not the app. Fix made from this: `speak()` now gives up after 3 s if audio has not started (commit 9509633), so a silent engine no longer leaves the trainee waiting; the examiner's words are already on screen.
+
+**Speech recognition on medical words (U-2).** Chrome turned "what's the pressure" into "what does depression", "pilocarpine" into "pillow carbon" / "pillow karpan", and "gonioscopy" into "colonoscopy". Claude Haiku still mapped the first two correctly (the right IOP was revealed; the follow-up named pilocarpine). "Colonoscopy" was treated as a finding not in the case, so the trainee heard "That is not available in this case." instead of the gonioscopy result. Next improvement: tell the turn model that the text comes from speech recognition and may hold sound-alike errors for medical terms.
+
+**Voice reading of "6/36", "mmHg", "+3.50 DS" (U-3).** Not checked, because no audio played.
 
 ## Handover
 

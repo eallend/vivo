@@ -1,6 +1,6 @@
 # Definition of Done: Voice Viva (design 2026-11-25)
 
-Checked on 2026-11-25 at commit 23b7185 (branch `feat/voice-viva`). Every command below was run by the controller for this record; outputs are quoted or summarised.
+Checked on 2026-11-25 at commit 23b7185; manual rows updated after the spoken run (fix 9509633: 63/63 tests, four gates exit 0) (branch `feat/voice-viva`). Every command below was run by the controller for this record; outputs are quoted or summarised.
 
 ## (a) Acceptance criteria
 
@@ -12,15 +12,15 @@ Checked on 2026-11-25 at commit 23b7185 (branch `feat/voice-viva`). Every comman
 | R-4 | Findings come from the file | `pnpm test` (`findings.test.ts`) | pass | pass |
 | R-5 | Diagnosis not sent to the browser | test half: `pnpm test` (`src/server/viva.handlers.test.ts`); bundle half: `grep -rl sk-ant dist` after `pnpm build` | tests pass; 0 files contain "sk-ant" | pass |
 | R-6 | Exactly one follow-up | `pnpm test` (`src/lib/viva/flow.test.ts`) | pass | pass |
-| R-7 | Follow-up never restates a finding | test half: `pnpm test` (`flow.test.ts`); manual half: spoken run | tests pass; manual half not yet run | test: pass · manual: not verified |
-| R-8 | Turn state is visible | manual spoken run in Chrome (H-3) | typed Playwright runs saw all four turn states and End disabled while thinking; spoken run not yet done | not verified |
-| R-9 | Attempt survives refresh | manual | typed Playwright run (Task 8b): review identical after reload and after reopening from the list; spoken run not yet done | not verified (typed run passed) |
+| R-7 | Follow-up never restates a finding | test half: `pnpm test` (`flow.test.ts`); manual half: spoken run | tests pass; spoken run: follow-up asked "Why would you start pilocarpine but not wait for the pressure to fall first?" about the trainee's own plan | pass |
+| R-8 | Turn state is visible | manual spoken run in Chrome (H-3) | typed Playwright runs saw all four states; spoken run saw listening and thinking, but no audio played on the test Mac (Chrome speech engine silent even in a bare console test) | not verified (partly) |
+| R-9 | Attempt survives refresh | manual | spoken run: after reload and reopening from the list, all 9 turns, the finding and the revision point were identical | pass |
 | R-10 | Attempts are private | `pnpm check:privacy` | 4/4 PASS: A writes 200, A reads 200, B reads 403, anonymous reads 403 | pass |
 | R-11 | Retrieval follows the trainee's words | `pnpm test` (`src/lib/revision/revision.test.ts`) | pass | pass |
 | R-12 | Quote must exist in the note | `pnpm test` (`revision.test.ts`); `pnpm check:live` Check 3 | tests pass; Check 3 status supported, quote found in passage p-072 (page 5) | pass |
 | R-13 | Passages carry correct pages | `pnpm test` (`scripts/prepare-note.test.ts`) | pass (128 passages after clean-up) | pass |
 | R-14 | Only signed-in users reach Claude | `pnpm test` (`src/server/auth.server.test.ts`, incl. expired and wrong-key tokens) | pass | pass |
-| R-15 | Voice turn is measured | manual spoken run | Playwright Chrome fired no speech start, so no real figure yet; `check:live` turn times 1221 ms and 1528 ms (Haiku) | not verified |
+| R-15 | Voice turn is measured | manual spoken run | no audio played on the test Mac, so the app stored "no time" (correct behaviour); `check:live` turn times 1221 ms and 1528 ms (Haiku) | not verified |
 | R-16 | Submission write-up exists | read `README.md`, `docs/submission/write-up.md` | README names the case file the app reads and has run steps; write-up has all seven sections | pass |
 
 ## (b) Project gates
@@ -52,4 +52,5 @@ Checked on 2026-11-25 at commit 23b7185 (branch `feat/voice-viva`). Every comman
 
 ## Open
 
-- H-3: the user's five-minute spoken run in Chrome, which closes R-7 (manual), R-8, R-9 and R-15.
+- R-8 audio half and R-15 need a machine where Chrome's speech synthesis plays sound.
+- Sound-alike mishearings of medical terms ("colonoscopy" for gonioscopy) are not handled; listed as the next improvement.
