@@ -4,6 +4,7 @@ import { UNKNOWN_REQUEST_TEXT } from "./findings.ts"
 import {
   buildReply,
   CLOSING_TEXT,
+  FALLBACK_FOLLOW_UP_TEXT,
   guardFollowUp,
   PROMPT_AGAIN_TEXT,
 } from "./flow.ts"
@@ -69,6 +70,13 @@ describe("viva flow", () => {
     expect(
       guardFollowUp("  Why might pilocarpine fail early on?  ", ideas)
     ).toBe("Why might pilocarpine fail early on?")
+  })
+
+  it("an empty follow-up idea list falls back to a generic question", () => {
+    expect(guardFollowUp("Which eye is worse, right or left?", [])).toBe(
+      FALLBACK_FOLLOW_UP_TEXT
+    )
+    expect(guardFollowUp(null, [])).toBe(FALLBACK_FOLLOW_UP_TEXT)
   })
 
   it("unknown request and empty turn", () => {

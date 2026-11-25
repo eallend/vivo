@@ -28,6 +28,7 @@ function appendLine(text: string, line: string): string {
  * Merges one examiner reply into the attempt: both turns, newly revealed
  * findings, status, the follow-up question and answer, and the answer text
  * (the turn that triggered the follow-up and the follow-up answer).
+ * A reply that would move a finished attempt back is ignored.
  */
 export function applyReply(
   a: Attempt,
@@ -35,13 +36,16 @@ export function applyReply(
   reply: ExaminerReply,
   now: number
 ): Attempt {
-  const asksFollowUp = reply.followUpQuestion !== null
+  if (a.status === "finished" && reply.status !== "finished") return a
+
+  const question = reply.followUpQuestion
+  const asksFollowUp = question !== null
   const answersFollowUp =
     a.status === "follow_up_asked" && reply.status === "finished"
 
   let followUp = a.followUp
   if (asksFollowUp) {
-    followUp = { question: reply.followUpQuestion as string, answer: null }
+    followUp = { question, answer: null }
   } else if (answersFollowUp && followUp) {
     followUp = { ...followUp, answer: traineeText }
   }

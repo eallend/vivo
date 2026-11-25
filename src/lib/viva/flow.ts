@@ -15,14 +15,17 @@ export const CLOSING_TEXT = "Thank you. That concludes the viva."
 export const PROMPT_AGAIN_TEXT =
   "Please ask for an examination finding, or tell me your diagnosis and management."
 
-/** Model text that could restate a finding (a number, or naming an eye) is replaced by the case's first follow-up idea. */
+/** Asked when the case has no follow-up ideas to fall back on. */
+export const FALLBACK_FOLLOW_UP_TEXT = "What would you do next?"
+
+/** Model text that could restate a finding (a number, or naming an eye) is replaced by the case's first follow-up idea, or a generic question when there is none. */
 export function guardFollowUp(
   question: string | null,
   ideas: string[]
 ): string {
   const text = question?.trim() ?? ""
   if (text === "" || /\d/.test(text) || /\b(right|left)\b/i.test(text)) {
-    return ideas[0]
+    return ideas.at(0) ?? FALLBACK_FOLLOW_UP_TEXT
   }
   return text
 }

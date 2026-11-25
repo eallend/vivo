@@ -1,13 +1,5 @@
 [
   {
-    "id": "p-001",
-    "pages": [
-      1
-    ],
-    "heading": "Glaucoma and angle closure",
-    "text": "Reference note | Voice viva take-home | Written by Eye Academy | Revised November 2026"
-  },
-  {
     "id": "p-002",
     "pages": [
       1
@@ -62,14 +54,6 @@
     ],
     "heading": "Van Herick grading",
     "text": "With a thin, bright slit beam offset about 60 degrees from the microscope and placed at the temporal limbus, compare the depth of the most peripheral anterior chamber with the thickness of the cornea."
-  },
-  {
-    "id": "p-009",
-    "pages": [
-      2
-    ],
-    "heading": "Van Herick grading",
-    "text": "Grade | Peripheral chamber depth | Interpretation"
   },
   {
     "id": "p-010",
@@ -454,14 +438,6 @@
     ],
     "heading": "Triggers",
     "text": "Drug-induced bilateral angle closure from topiramate and some sulfonamide-type drugs works by a different mechanism and is covered under secondary angle closure."
-  },
-  {
-    "id": "p-058",
-    "pages": [
-      4
-    ],
-    "heading": "Differential diagnosis",
-    "text": "Condition | Features that help to tell it apart"
   },
   {
     "id": "p-059",
@@ -911,14 +887,6 @@
     ],
     "heading": "Primary open-angle glaucoma and ocular hypertension",
     "text": "Normal-tension glaucoma describes glaucomatous damage with IOP that is always within the normal range. Vascular factors such as low blood pressure at night, migraine and Raynaud’s phenomenon may play a role."
-  },
-  {
-    "id": "p-115",
-    "pages": [
-      9
-    ],
-    "heading": "IOP-lowering medicines",
-    "text": "Class | Examples | How it lowers IOP | Key cautions"
   },
   {
     "id": "p-116",

@@ -5,9 +5,12 @@ import { verifyIdToken } from "./auth.server.ts"
 
 let keys: JWTVerifyGetKey
 let sign: (claims: JWTPayload) => Promise<string>
+let privateKey: CryptoKey
 
 beforeAll(async () => {
-  const { publicKey, privateKey } = await generateKeyPair("RS256")
+  const pair = await generateKeyPair("RS256")
+  const publicKey = pair.publicKey
+  privateKey = pair.privateKey
   keys = async () => publicKey
   sign = (claims) =>
     new SignJWT(claims)
@@ -61,5 +64,32 @@ describe("verifyIdToken", () => {
         keys
       )
     ).rejects.toThrow("unauthenticated")
+  })
+
+  it("rejects an expired token and a token signed by another key", async () => {
+    const claims = {
+      aud: "proj",
+      iss: "https://securetoken.google.com/proj",
+      sub: "u1",
+    }
+    const now = Math.floor(Date.now() / 1000)
+    const expired = await new SignJWT(claims)
+      .setProtectedHeader({ alg: "RS256", kid: "test" })
+      .setIssuedAt(now - 7200)
+      .setExpirationTime(now - 3600)
+      .sign(privateKey)
+    await expect(verifyIdToken(expired, "proj", keys)).rejects.toThrow(
+      "unauthenticated"
+    )
+
+    const other = await generateKeyPair("RS256")
+    const forged = await new SignJWT(claims)
+      .setProtectedHeader({ alg: "RS256", kid: "test" })
+      .setIssuedAt()
+      .setExpirationTime("1h")
+      .sign(other.privateKey)
+    await expect(verifyIdToken(forged, "proj", keys)).rejects.toThrow(
+      "unauthenticated"
+    )
   })
 })

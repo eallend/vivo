@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card"
 import { EyeTag } from "@/components/viva/eye-tag"
 import type { RevealedFinding } from "@/lib/viva/types"
 
-/** One revealed finding: eye, label, value and method, or "Not available" with the reason. */
+/** One revealed finding: eye, label, value (or "Not recorded" when blank) and method, or "Not available" with the reason. */
 export function FindingCard({
   finding,
   isNew = false,
@@ -47,7 +47,7 @@ export function FindingCard({
         </div>
       ) : (
         <div className="text-xl leading-tight font-bold text-card-foreground">
-          {finding.valueText}
+          {finding.valueText?.trim() || "Not recorded"}
         </div>
       )}
       {(unavailable ? finding.reason : finding.method) && (

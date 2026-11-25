@@ -6,6 +6,7 @@ import { buildReply } from "../lib/viva/flow.ts"
 import type {
   CaseData,
   ExaminerReply,
+  Interpretation,
   Passage,
   RevisionPoint,
   VivaStatus,
@@ -15,7 +16,13 @@ import { interpretTurn, writeRevision } from "./claude.server.ts"
 
 export const REPEAT_TEXT = "Sorry, I didn't catch that. Please say it again."
 
-const FALLBACK_FOLLOW_UP = "What would you do next?"
+const NO_REQUEST: Interpretation = {
+  findingIds: [],
+  historyFields: [],
+  unknownRequests: [],
+  gaveAnswer: false,
+  followUpQuestion: null,
+}
 
 const PASSAGES_FILE = "data/reference-note.passages.json"
 
@@ -58,7 +65,7 @@ const repeat = (status: VivaStatus): ExaminerReply => ({
   followUpQuestion: null,
 })
 
-/** One examiner turn. The status comes from the caller and is passed through or advanced by `buildReply`; a blank text or a failed model call asks the trainee to repeat. */
+/** One examiner turn. The status comes from the caller and is passed through or advanced by `buildReply`; after the follow-up no model is called; a blank text or a failed model call asks the trainee to repeat. */
 export async function handleTurn(
   d: Deps,
   input: { text: string; status: VivaStatus; history: HistoryEntry[] }
@@ -66,18 +73,10 @@ export async function handleTurn(
   const text = input.text.trim()
   if (text === "") return repeat(input.status)
 
-  const loaded = await d.loadCase()
-  // The follow-up guard falls back to the first idea, so an empty list gets a generic question.
-  const c: CaseData =
-    loaded.examiner_notes.follow_up_ideas.length > 0
-      ? loaded
-      : {
-          ...loaded,
-          examiner_notes: {
-            ...loaded.examiner_notes,
-            follow_up_ideas: [FALLBACK_FOLLOW_UP],
-          },
-        }
+  const c = await d.loadCase()
+  // Once the follow-up has been asked, the reply is the closing line whatever was said.
+  if (input.status !== "in_progress")
+    return buildReply(c, input.status, NO_REQUEST)
 
   try {
     const interpretation = await d.interpret({
@@ -116,9 +115,9 @@ export async function handleRevision(
     })
     return checkCitation(reply, retrieved)
   } catch {
-    const retrievedPages = [
-      ...new Set(retrieved.flatMap((p) => p.pages)),
-    ].sort((a, b) => a - b)
+    const retrievedPages = [...new Set(retrieved.flatMap((p) => p.pages))].sort(
+      (a, b) => a - b
+    )
     return { status: "no_support", reason: "model_error", retrievedPages }
   }
 }

@@ -26,7 +26,12 @@ async function timed<T>(label: string, run: () => Promise<T>): Promise<T> {
   return result
 }
 
-function report(name: string, pass: boolean, expected: string, observed: string) {
+function report(
+  name: string,
+  pass: boolean,
+  expected: string,
+  observed: string
+) {
   console.log(`${pass ? "PASS" : "FAIL"} ${name}`)
   console.log(`  expected: ${expected}`)
   console.log(`  observed: ${observed}`)
@@ -133,5 +138,9 @@ await checkTurn(
   }
 }
 
-console.log(failures === 0 ? "\nAll live checks passed." : `\n${failures} live check(s) failed.`)
+console.log(
+  failures === 0
+    ? "\nAll live checks passed."
+    : `\n${failures} live check(s) failed.`
+)
 process.exit(failures === 0 ? 0 : 1)

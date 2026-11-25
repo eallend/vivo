@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { CLOSING_TEXT, FALLBACK_FOLLOW_UP_TEXT } from "../lib/viva/flow.ts"
 import type { CaseData, Interpretation, Passage } from "../lib/viva/types.ts"
 import { loadCase } from "./case.server.ts"
 import type { Deps } from "./viva.handlers.ts"
@@ -106,12 +107,23 @@ describe("viva handlers", () => {
         { text: "iop", status: "in_progress", history: [] }
       )
     ).toMatchObject({ spoken: REPEAT_TEXT, status: "in_progress" })
-    expect(
-      await handleTurn(
-        { ...d, interpret: () => Promise.reject(new Error("timeout")) },
-        { text: "iop", status: "follow_up_asked", history: [] }
-      )
-    ).toMatchObject({ spoken: REPEAT_TEXT, status: "follow_up_asked" })
+  })
+
+  it("after the follow-up the viva closes without a model call", async () => {
+    for (const status of ["follow_up_asked", "finished"] as const) {
+      expect(
+        await handleTurn(
+          { ...d, interpret: () => Promise.reject(new Error("timeout")) },
+          { text: "because of pupil block", status, history: [] }
+        )
+      ).toEqual({
+        spoken: CLOSING_TEXT,
+        revealed: [],
+        status: "finished",
+        followUpQuestion: null,
+      })
+    }
+    expect(interpret).not.toHaveBeenCalled()
   })
 
   it("an empty follow-up idea list still gives a follow-up question", async () => {
@@ -129,7 +141,7 @@ describe("viva handlers", () => {
       { ...d, loadCase: async () => noIdeas },
       { text: "acute angle closure", status: "in_progress", history: [] }
     )
-    expect(reply.followUpQuestion).toBe("What would you do next?")
+    expect(reply.followUpQuestion).toBe(FALLBACK_FOLLOW_UP_TEXT)
     expect(reply.status).toBe("follow_up_asked")
   })
 

@@ -189,9 +189,21 @@ function toBlocks(pages: Line[][]): { blocks: Block[]; pageRight: number[] } {
   return { blocks, pageRight }
 }
 
+// The first row of a table is its header (column names) and, under the title, the note's
+// metadata line is laid out the same way; neither holds anything to quote or search.
+const isHeaderRow = (block: Block, previous: Block | null) =>
+  block.lines.length === 1 &&
+  isTabular(block) &&
+  (block.afterHeading || previous === null || !isTabular(previous))
+
 function toPassages(blocks: Block[], pageRight: number[]): Passage[] {
   const seenTexts = new Set<string>()
-  const merged: { pages: number[]; heading: string; text: string }[] = []
+  const merged: {
+    pages: number[]
+    heading: string
+    text: string
+    drop: boolean
+  }[] = []
   let previous: Block | null = null
   for (const block of blocks) {
     const text = blockText(block)
@@ -216,14 +228,24 @@ function toPassages(blocks: Block[], pageRight: number[]): Passage[] {
       last.pages.push(block.page)
       last.text = joinLines([last.text, text])
     } else {
-      merged.push({ pages: [block.page], heading: block.heading, text })
+      merged.push({
+        pages: [block.page],
+        heading: block.heading,
+        text,
+        drop: isHeaderRow(block, previous),
+      })
     }
     previous = block
   }
-  return merged.map((p, i) => ({
-    id: `p-${String(i + 1).padStart(3, "0")}`,
-    ...p,
-  }))
+  // Ids are numbered before header rows are dropped, so the other passages keep the ids
+  // they had when header rows were still included.
+  return merged
+    .map(({ drop, ...p }, i) => ({
+      drop,
+      passage: { id: `p-${String(i + 1).padStart(3, "0")}`, ...p },
+    }))
+    .filter((p) => !p.drop)
+    .map((p) => p.passage)
 }
 
 const { blocks, pageRight } = toBlocks(await readPages())

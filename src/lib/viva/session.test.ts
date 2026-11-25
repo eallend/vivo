@@ -120,4 +120,20 @@ describe("applyReply", () => {
     expect(empty.revealedFindings).toEqual([])
     expect(empty.status).toBe("in_progress")
   })
+
+  it("ignores a reply that would move a finished attempt back", () => {
+    const finished: Attempt = { ...empty, status: "finished" }
+    const after = applyReply(
+      finished,
+      "one more thing",
+      {
+        spoken: "Right eye…",
+        revealed: [iopRight],
+        status: "in_progress",
+        followUpQuestion: null,
+      },
+      9
+    )
+    expect(after).toBe(finished)
+  })
 })

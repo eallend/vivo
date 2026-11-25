@@ -22,15 +22,15 @@ const PATIENT_FIELDS = [
 ] as const satisfies readonly PatientField[]
 
 const turnModel = () => process.env.VIVA_TURN_MODEL ?? "claude-haiku-5-5"
-const revisionModel = () =>
-  process.env.VIVA_REVISION_MODEL ?? "claude-opus-5-5"
+const revisionModel = () => process.env.VIVA_REVISION_MODEL ?? "claude-opus-5-5"
 
 let turnClient: Anthropic | null = null
 let revisionClient: Anthropic | null = null
 
 // Created on first use so the API key is read after the environment is loaded.
+// No retry on the turn call: a 15 s timeout plus a retry could keep the trainee waiting 30 s.
 const getTurnClient = () =>
-  (turnClient ??= new Anthropic({ timeout: 15_000, maxRetries: 1 }))
+  (turnClient ??= new Anthropic({ timeout: 15_000, maxRetries: 0 }))
 const getRevisionClient = () =>
   (revisionClient ??= new Anthropic({ timeout: 60_000, maxRetries: 1 }))
 
@@ -106,7 +106,9 @@ export async function interpretTurn(args: {
     },
   })
   if (response.stop_reason === "refusal" || !response.parsed_output) {
-    throw new Error(`turn model gave no usable output (${response.stop_reason})`)
+    throw new Error(
+      `turn model gave no usable output (${response.stop_reason})`
+    )
   }
   return response.parsed_output
 }
@@ -124,7 +126,7 @@ const REVISION_SYSTEM_PROMPT = [
   "Pick the most important thing the trainee missed or got wrong that one of the passages supports.",
   "Write it as `point`: one or two plain sentences addressed to the trainee.",
   "Set `passageId` to the id of the passage that supports it, and `quote` to a word-for-word copy of 15 to 300 characters from that passage.",
-  "Copy the quote from within one sentence of one passage. Some passages are table rows whose cells are joined by \" | \": never let a quote cross a \" | \".",
+  'Copy the quote from within one sentence of one passage. Some passages are table rows whose cells are joined by " | ": never let a quote cross a " | ".',
   "If no passage supports any such point, return supported: false with passageId and quote null.",
 ].join("\n")
 
@@ -164,7 +166,11 @@ export async function writeRevision(args: {
     messages: [
       {
         role: "user",
-        content: revisionUserMessage(args.answerText, args.notes, args.retrieved),
+        content: revisionUserMessage(
+          args.answerText,
+          args.notes,
+          args.retrieved
+        ),
       },
     ],
     output_config: {

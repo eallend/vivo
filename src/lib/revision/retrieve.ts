@@ -14,13 +14,13 @@ const STOP_WORDS = new Set(
     "themselves then there these they this those through to too under until up " +
     "very was we were what when where which while who whom why will with would " +
     "you your yours yourself yourselves"
-  ).split(" "),
+  ).split(" ")
 )
 
 /** Lower-cased word tokens with English stop words removed. */
 export function tokenize(s: string): string[] {
   return (s.toLowerCase().match(/[a-z0-9]+/g) ?? []).filter(
-    (t) => !STOP_WORDS.has(t),
+    (t) => !STOP_WORDS.has(t)
   )
 }
 
@@ -31,7 +31,7 @@ export function tokenize(s: string): string[] {
 export function retrieve(
   passages: Passage[],
   query: string,
-  k = 5,
+  k = 5
 ): { passage: Passage; score: number }[] {
   const queryTerms = [...new Set(tokenize(query))]
   if (queryTerms.length === 0 || passages.length === 0) return []
