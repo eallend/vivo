@@ -52,7 +52,7 @@ Working rules:
 User hand-offs:
 
 - **H-1 (during Task 7):** paste `firestore.rules` into Firebase console → Firestore Database → Rules → Publish. Without it nothing can be saved.
-- **H-2 (before Task 9):** put the chosen Claude Design sketch (screenshots or exported HTML) in `docs/design/`. If absent when Task 9 starts, Task 9 is skipped and reported.
+- **H-2 (ideally before Task 8):** put the chosen Claude Design sketch (screenshots or exported HTML) in `docs/design/`. If it is there when Task 8 starts, Task 8 builds the screens in that design directly and Task 9 is skipped as already done. If it arrives after Task 8, Task 9 restyles. If it never arrives, the screens stay in plain shadcn defaults and Task 9 is skipped and reported.
 - **H-3 (during Task 10):** a five-minute spoken run in Chrome following `docs/submission/write-up.md`, to record R-7, R-8, R-9, R-15. An agent cannot use the microphone.
 
 Order: Task 1 first. Then Tasks 2, 4 and 7 can run in parallel. Task 3 needs 2. Task 5 needs 4. Task 6 needs 2, 3, 5. Task 8 needs 6, 7. Task 9 needs 8. Task 10 last.
@@ -448,7 +448,7 @@ Screens (all `ssr: false`; unauthenticated users are sent to `/login`):
 - `/viva/$attemptId`: loads the attempt. If not `finished`: opening prompt, turn indicator with the four states, mic button (enabled only in `your_turn`), typed-input box, transcript, revealed-findings panel (eye badge, label, `valueText` or "Not available: reason", method), last turn time in ms, "End viva". If `finished`: read-only transcript and findings plus the revision-point card: point, "Reference note, page 5" (or "pages 5–6"), excerpt, or "No support found in the reference note for this answer."
 - Turn loop: `listening` → transcript (or typed text) → `thinking`, timer starts → `takeTurn` → `examiner_speaking`, timer stops in `speak`'s `onStart` → `applyReply` → `saveAttempt` → `your_turn`. The opening prompt is spoken when a new attempt opens. When the status becomes `finished` or "End viva" is pressed: `makeRevisionPoint({ answerText })`, save, show the card.
 - If `speechSupported()` is false, show "Voice needs desktop Chrome; you can type instead." and keep the text box.
-- Use plain shadcn components (`pnpm dlx shadcn@latest add card input badge`), no custom styling beyond layout.
+- Use shadcn components (`pnpm dlx shadcn@latest add card input badge`). If `docs/design/` holds a sketch, follow its layout, colour, type and spacing. Otherwise add no custom styling beyond layout.
 
 - [ ] **Step 1: Write the failing test** for `applyReply`:
 
